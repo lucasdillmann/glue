@@ -1,0 +1,5 @@
+dependencies {
+    compile group: 'org.jboss.weld.se', name: 'weld-se', version: '2.4.8.Final'
+    compile group: 'org.jboss', name: 'jandex', version: '2.0.5.Final'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+}

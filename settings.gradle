@@ -1,0 +1,6 @@
+rootProject.name = 'glue'
+include 'core'
+include 'core-logger'
+include 'container-jetty'
+include 'container-api'
+
