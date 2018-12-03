@@ -31,6 +31,13 @@ public final class GlueApplication {
     }
 
     /**
+     * Initializes the startup time value using current system time
+     */
+    static void initStartupTime() {
+        GlueApplication.startupTime = System.currentTimeMillis();
+    }
+
+    /**
      * Starts the Glue using the application main class
      *
      * <p>This method starts the Glue using the application main class as the start point of the bean automatic
@@ -39,7 +46,7 @@ public final class GlueApplication {
      * @param applicationClass Application main class
      */
     public static void start(Class<?> applicationClass) {
-        GlueApplication.startupTime = System.currentTimeMillis();
+        initStartupTime();
         new CdiController(applicationClass).start();
     }
 

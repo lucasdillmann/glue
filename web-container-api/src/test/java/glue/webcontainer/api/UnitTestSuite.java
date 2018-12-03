@@ -5,8 +5,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        WebContainerLifecycleTests.class,
-        WebContainerModuleDiscoveryTests.class
+        WebContainerLifecycleTests.class
 })
 public class UnitTestSuite {
 }

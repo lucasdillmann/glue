@@ -49,6 +49,7 @@ public class LifecycleControllerTests {
 
     @Before
     public void setup() {
+        GlueApplication.initStartupTime();
         doReturn(modulesIterator).when(modules).iterator();
         doReturn(modulesSpliterator).when(modules).spliterator();
         doReturn(shutdownListenerDelegate).when(shutdownListener).get();

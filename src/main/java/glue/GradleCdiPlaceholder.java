@@ -1,0 +1,5 @@
+package glue;
+
+class GradleCdiPlaceholder {
+
+}

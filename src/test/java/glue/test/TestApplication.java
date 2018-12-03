@@ -5,7 +5,7 @@ import glue.core.GlueApplication;
 public class TestApplication {
 
     public static void main(String[] args) {
-        GlueApplication.start(Test.class);
+        GlueApplication.start(TestApplication.class);
     }
 
 }

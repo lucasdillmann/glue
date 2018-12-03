@@ -1,11 +1,12 @@
-package glue.core.logger;
+package glue.webcontainer.jetty;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        LoggerProviderTests.class
+        JettyServerProducerTests.class,
+        JettyWebContainerTests.class
 })
 public class UnitTestSuite {
 }
