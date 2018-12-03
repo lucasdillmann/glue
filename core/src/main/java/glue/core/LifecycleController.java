@@ -43,14 +43,14 @@ class LifecycleController {
     /**
      * Constructor with modules, log and JVM listener initialization
      *
-     * @param modules Application modules available in the classpath
-     * @param logger Logger
+     * @param modules     Application modules available in the classpath
+     * @param logger      Logger
      * @param jvmListener JVM shutdown listener
      */
     @Inject
-    public LifecycleController(@Any Instance<ModuleLifecycle> modules,
-                               Instance<Logger> logger,
-                               Instance<ShutdownListener> jvmListener) {
+    LifecycleController(@Any Instance<ModuleLifecycle> modules,
+                        Instance<Logger> logger,
+                        Instance<ShutdownListener> jvmListener) {
         validateLogger(logger);
         validateModules(modules);
 
@@ -90,7 +90,8 @@ class LifecycleController {
         jvmListener.start(this::stop);
 
         getSortedModules().forEach(ModuleLifecycle::start);
-        logger.info("Glue started");
+        final Long startupTime = System.currentTimeMillis() - GlueApplication.getStartupTime();
+        logger.info("Glue started after {} milliseconds", startupTime);
     }
 
     /**

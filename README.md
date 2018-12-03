@@ -8,7 +8,8 @@ mechanism created as a experiment, acting as a placement (like a background stor
 practices.
 
 In another words, **Glue is a simple IoC to let me glue libraries together** (understand the name now?) **while 
-applying best development practices** (such modularized development, clean code, design patterns, TDD and even DevOps) 
+applying best development practices** (such modularized development, clean code, design patterns, TDD, fail-fast, 
+convention over configuration and even DevOps) 
 based in the articles and books published by the gods (like [Martin Fowler](https://martinfowler.com/)).
 
 This project also don't target a single architecture like microservices or monolitic desktop applications, it aims to 

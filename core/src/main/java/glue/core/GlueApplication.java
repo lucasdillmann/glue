@@ -19,6 +19,24 @@ package glue.core;
  */
 public final class GlueApplication {
 
+    private static Long startupTime;
+
+    /**
+     * Returns the application startup time
+     *
+     * @return Application startup time
+     */
+    static Long getStartupTime() {
+        return startupTime;
+    }
+
+    /**
+     * Initializes the startup time value using current system time
+     */
+    static void initStartupTime() {
+        GlueApplication.startupTime = System.currentTimeMillis();
+    }
+
     /**
      * Starts the Glue using the application main class
      *
@@ -28,7 +46,8 @@ public final class GlueApplication {
      * @param applicationClass Application main class
      */
     public static void start(Class<?> applicationClass) {
-        new ApplicationController(applicationClass).start();
+        initStartupTime();
+        new CdiController(applicationClass).start();
     }
 
 }
