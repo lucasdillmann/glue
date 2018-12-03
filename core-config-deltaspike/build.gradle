@@ -1,0 +1,4 @@
+dependencies {
+    compile project(":core-config-api")
+    compile group: 'org.apache.deltaspike.core', name: 'deltaspike-core-impl', version: '1.9.0'
+}
