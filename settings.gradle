@@ -6,4 +6,5 @@ include 'web-container-api'
 include 'web-container-jetty'
 include 'core-config-api'
 include 'core-config-deltaspike'
+include 'core-config-properties-file'
 
