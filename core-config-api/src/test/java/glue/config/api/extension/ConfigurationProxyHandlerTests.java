@@ -10,7 +10,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
@@ -75,6 +77,27 @@ public class ConfigurationProxyHandlerTests {
         assertThat(actualValue, is(expectedValue));
         verify(resolver, times(1)).resolve(eq(expectedKey), anyString());
         verify(translator, times(1)).translate(expectedValue.toString(), Integer.class);
+    }
+
+    @Test
+    public void shouldDetectAndHandleOptionalReturnTypes() throws Throwable {
+        // scenario
+        final Method method = ConfigurationProxyHandlerArtifact.class.getMethod("getTestWithOptional");
+        final Integer expectedValue = 123;
+        final String expectedKey = "testArtifact.test";
+        doReturn(expectedValue.toString()).when(resolver).resolve(eq(expectedKey), anyString());
+        doReturn(expectedValue).when(translator).translate(expectedValue.toString(), Integer.class);
+
+        // execution
+        final Object actualValue = handler.invoke(artifact, method, null);
+
+        // validation
+        assertNotNull(actualValue);
+        assertThat(actualValue, is(instanceOf(Optional.class)));
+
+        final Optional<Integer> optionalInstance = (Optional<Integer>) actualValue;
+        assertThat(optionalInstance.isPresent(), is(true));
+        assertThat(optionalInstance.get(), is(expectedValue));
     }
 
 }

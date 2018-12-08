@@ -5,9 +5,8 @@ import org.slf4j.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
+import java.util.Optional;
 
 /**
  * Java Proxy {@link InvocationHandler} implementation for Configuration API
@@ -102,6 +101,9 @@ class ConfigurationProxyHandler implements InvocationHandler {
         final String configurationKey = metadata.getKey();
         final String defaultValue = metadata.getDefaultValue();
         final Class<?> returnType = metadata.getTargetType();
+        final Class<?> targetType = Optional.class.isAssignableFrom(returnType)
+                ? extractTargetTypeFromOptional(calledMethod.getGenericReturnType())
+                : returnType;
 
         logger.debug(
                 "Resolving configuration key {} of type {} with default value of '{}'",
@@ -111,8 +113,29 @@ class ConfigurationProxyHandler implements InvocationHandler {
         );
 
         final String configurationValue = resolver.resolve(configurationKey, defaultValue);
-        return translator.translate(configurationValue, returnType);
+        final Object translatedValue = translator.translate(configurationValue, targetType);
+
+        if (Optional.class.isAssignableFrom(returnType))
+            return Optional.ofNullable(translatedValue);
+        else
+            return translatedValue;
     }
+
+    /**
+     * Extracts the generic type of an {@link Optional} return type. When no generic is found {@link Object} class is
+     * returned.
+     *
+     * @param returnType Return type to be analyzed
+     * @return Identified generic type
+     */
+    private Class<?> extractTargetTypeFromOptional(final Type returnType) {
+        final ParameterizedType parameterizedType = (ParameterizedType) returnType;
+        if (parameterizedType.getActualTypeArguments() == null || parameterizedType.getActualTypeArguments().length < 1)
+            return Object.class;
+
+        return (Class) parameterizedType.getActualTypeArguments()[0];
+    }
+
 
     /**
      * Fires the default implementation of the method in the interface
