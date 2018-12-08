@@ -1,10 +1,18 @@
 rootProject.name = 'glue'
 
-include 'core'
-include 'core-logger'
-include 'web-container-api'
-include 'web-container-jetty'
-include 'core-config-api'
-include 'core-config-deltaspike'
-include 'persistence-jpa-api'
+// Core
+include 'core',
+        'core-logger',
+        'core-config-api',
+        'core-config-deltaspike'
+
+// Web Container
+include 'web-container-api',
+        'web-container-jetty'
+
+// Persistence
+include 'persistence-jpa-api',
+        'persistence-jpa-hibernate',
+        'persistence-datasource-api',
+        'persistence-datasource-hikaricp'
 
