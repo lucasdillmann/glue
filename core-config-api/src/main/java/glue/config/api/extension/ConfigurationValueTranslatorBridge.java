@@ -21,7 +21,7 @@ import java.util.Optional;
  * @since 1.0.0, 2018-12-02
  */
 @Singleton
-class ConfigurationTranslatorBridge {
+class ConfigurationValueTranslatorBridge {
 
     private final Instance<ConfigurationValueTranslator> cdiResolver;
     private final Logger logger;
@@ -34,8 +34,8 @@ class ConfigurationTranslatorBridge {
      * @param logger Logger instance
      */
     @Inject
-    ConfigurationTranslatorBridge(final Instance<ConfigurationValueTranslator> cdiResolver,
-                                  final Logger logger) {
+    ConfigurationValueTranslatorBridge(final Instance<ConfigurationValueTranslator> cdiResolver,
+                                       final Logger logger) {
         this.cdiResolver = cdiResolver;
         this.logger = logger;
     }

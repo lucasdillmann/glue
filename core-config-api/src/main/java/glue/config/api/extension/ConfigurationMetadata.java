@@ -4,6 +4,7 @@ import glue.config.api.annotation.ConfigurationInterface;
 import glue.config.api.annotation.ConfigurationProperty;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -91,6 +92,15 @@ class ConfigurationMetadata {
      */
     Class<?> getTargetType() {
         return method.getReturnType();
+    }
+
+    /**
+     * Returns the generic return type definition
+     *
+     * @return Generic return type definition
+     */
+    Type getGenericReturnType() {
+        return method.getGenericReturnType();
     }
 
     /**

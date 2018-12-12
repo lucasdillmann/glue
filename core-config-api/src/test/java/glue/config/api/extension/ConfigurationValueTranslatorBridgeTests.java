@@ -19,26 +19,26 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.*;
 
 /**
- * Test cases for {@link ConfigurationTranslatorBridge}
+ * Test cases for {@link ConfigurationValueTranslatorBridge}
  *
  * @author Lucas Dillmann
  * @since 1.0.0, 2018-12-02
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ConfigurationTranslatorBridgeTests {
+public class ConfigurationValueTranslatorBridgeTests {
 
     @Mock
     private Instance instance;
     @Mock
     private Logger logger;
 
-    private ConfigurationTranslatorBridge translator;
+    private ConfigurationValueTranslatorBridge translator;
 
     @Before
     public void setup() {
         doReturn(instance).when(instance).select((TypeLiteral) anyObject());
         doReturn(false).when(instance).isAmbiguous();
-        this.translator = new ConfigurationTranslatorBridge(instance, logger);
+        this.translator = new ConfigurationValueTranslatorBridge(instance, logger);
     }
 
 

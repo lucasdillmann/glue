@@ -5,8 +5,9 @@ import org.slf4j.Logger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.*;
-import java.util.Optional;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 /**
  * Java Proxy {@link InvocationHandler} implementation for Configuration API
@@ -24,23 +25,27 @@ import java.util.Optional;
 class ConfigurationProxyHandler implements InvocationHandler {
 
     private final ConfigurationResolverBridge resolver;
-    private final ConfigurationTranslatorBridge translator;
+    private final ConfigurationValueTranslatorBridge valueTranslator;
+    private final ConfigurationContainerFacade containerFacade;
     private final Logger logger;
 
     /**
-     * Package protected constructor with {@link ConfigurationResolverBridge}, {@link ConfigurationTranslatorBridge}
+     * Package protected constructor with {@link ConfigurationResolverBridge}, {@link ConfigurationValueTranslatorBridge}
      * and {@link Logger} initialization
      *
      * @param resolver Configuration resolver
-     * @param translator Configuration values translator
+     * @param valueTranslator Configuration values translator
+     * @param containerFacade Configuration container translator facade
      * @param logger Logger
      */
     @Inject
     ConfigurationProxyHandler(final ConfigurationResolverBridge resolver,
-                              final ConfigurationTranslatorBridge translator,
+                              final ConfigurationValueTranslatorBridge valueTranslator,
+                              final ConfigurationContainerFacade containerFacade,
                               final Logger logger) {
         this.resolver = resolver;
-        this.translator = translator;
+        this.valueTranslator = valueTranslator;
+        this.containerFacade = containerFacade;
         this.logger = logger;
     }
 
@@ -75,14 +80,12 @@ class ConfigurationProxyHandler implements InvocationHandler {
             );
             return invokeDefaultMethod(proxyInstance, calledMethod, arguments);
         } else {
-
             if (arguments != null && arguments.length > 0)
                 logger.warn("Method {} from configuration interface {} was called using arguments. They will be ignored " +
                         "since the feature isn't supported.");
 
             return invokeConfigurationResolution(calledMethod);
         }
-
 
     }
 
@@ -98,44 +101,41 @@ class ConfigurationProxyHandler implements InvocationHandler {
      */
     private Object invokeConfigurationResolution(final Method calledMethod) throws Throwable {
         final ConfigurationMetadata metadata = new ConfigurationMetadata(calledMethod);
-        final String configurationKey = metadata.getKey();
-        final String defaultValue = metadata.getDefaultValue();
+
         final Class<?> returnType = metadata.getTargetType();
-        final Class<?> targetType = Optional.class.isAssignableFrom(returnType)
-                ? extractTargetTypeFromOptional(calledMethod.getGenericReturnType())
-                : returnType;
 
-        logger.debug(
-                "Resolving configuration key {} of type {} with default value of '{}'",
-                configurationKey,
-                returnType.getName(),
-                defaultValue
-        );
+        if (containerFacade.isAContainer(returnType)) {
+            final Class<?> targetType = containerFacade.getTargetConfigurationValueType(
+                    returnType, metadata.getGenericReturnType()
+            );
+            final Object configurationValue = getConfigurationValueFromResolver(metadata, targetType);
+            return containerFacade.translate(configurationValue, returnType);
+        } else {
+            return getConfigurationValueFromResolver(metadata, returnType);
+        }
 
-        final String configurationValue = resolver.resolve(configurationKey, defaultValue);
-        final Object translatedValue = translator.translate(configurationValue, targetType);
-
-        if (Optional.class.isAssignableFrom(returnType))
-            return Optional.ofNullable(translatedValue);
-        else
-            return translatedValue;
     }
 
     /**
-     * Extracts the generic type of an {@link Optional} return type. When no generic is found {@link Object} class is
-     * returned.
+     * Executes the configuration resolution
      *
-     * @param returnType Return type to be analyzed
-     * @return Identified generic type
+     * @param metadata Configuration metadata
+     * @param targetType Target type to convert the configurtion value to
+     * @param <T> Generic target type
+     * @return Resolved configuration value
      */
-    private Class<?> extractTargetTypeFromOptional(final Type returnType) {
-        final ParameterizedType parameterizedType = (ParameterizedType) returnType;
-        if (parameterizedType.getActualTypeArguments() == null || parameterizedType.getActualTypeArguments().length < 1)
-            return Object.class;
+    private <T> T getConfigurationValueFromResolver(final ConfigurationMetadata metadata,
+                                                    final Class<T> targetType) {
+        logger.debug(
+                "Resolving configuration key {} of type {} with default value of '{}'",
+                metadata.getKey(),
+                targetType.getName(),
+                metadata.getDefaultValue()
+        );
 
-        return (Class) parameterizedType.getActualTypeArguments()[0];
+        final String configurationValue = resolver.resolve(metadata.getKey(), metadata.getDefaultValue());
+        return valueTranslator.translate(configurationValue, targetType);
     }
-
 
     /**
      * Fires the default implementation of the method in the interface
@@ -153,7 +153,6 @@ class ConfigurationProxyHandler implements InvocationHandler {
     private Object invokeDefaultMethod(final Object proxyInstance,
                                        final Method calledMethod,
                                        final Object[] arguments) throws Throwable {
-
         final Class<?> configurationInterface = calledMethod.getDeclaringClass();
         final Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class
                 .getDeclaredConstructor(Class.class);
