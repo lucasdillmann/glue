@@ -4,7 +4,8 @@ rootProject.name = 'glue'
 include 'core',
         'core-logger',
         'core-config-api',
-        'core-config-deltaspike'
+        'core-config-deltaspike',
+        'core-config-properties-file'
 
 // Web Container
 include 'web-container-api',
