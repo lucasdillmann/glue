@@ -1,4 +1,4 @@
-package glue.webcontainer.jetty;
+package glue.web.container.jetty;
 
 import org.eclipse.jetty.server.Server;
 import org.junit.Before;

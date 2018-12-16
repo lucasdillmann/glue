@@ -16,4 +16,5 @@ include 'persistence-jpa-api',
         'persistence-jpa-hibernate',
         'persistence-datasource-api',
         'persistence-datasource-hikaricp'
+include 'web-jaxrs-api'
 

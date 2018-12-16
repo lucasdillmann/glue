@@ -1,4 +1,4 @@
-package glue.webcontainer.jetty;
+package glue.web.container.jetty;
 
 import org.eclipse.jetty.server.Server;
 import org.junit.Before;
@@ -40,7 +40,7 @@ public class JettyWebContainerTests {
         PowerMockito.doNothing().when(server).start();
 
         // execution
-        webContainer.start();
+        webContainer.startContainer();
 
         // validation
         verify(server, times(1)).start();
@@ -52,7 +52,7 @@ public class JettyWebContainerTests {
         PowerMockito.doNothing().when(server).stop();
 
         // execution
-        webContainer.stop();
+        webContainer.stopContainer();
 
         // validation
         verify(server, times(1)).stop();

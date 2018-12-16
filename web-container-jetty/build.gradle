@@ -2,4 +2,5 @@ dependencies {
     compile project(":web-container-api")
     compile project(":core-config-api")
     compile group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.14.v20181114'
+    compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '9.4.14.v20181114'
 }

@@ -1,4 +1,4 @@
-package glue.webcontainer.api;
+package glue.web.container.api;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

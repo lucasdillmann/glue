@@ -1,4 +1,4 @@
-package glue.webcontainer.api;
+package glue.web.container.api;
 
 import glue.core.module.ModuleLifecycle;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public class WebContainerLifecycle implements ModuleLifecycle {
     @Override
     public void start() {
         logger.info("Starting {} using {}", WebContainer.class.getSimpleName(), webContainer.getClass().getSimpleName());
-        webContainer.start();
+        webContainer.startContainer();
     }
 
     /**
@@ -52,6 +52,6 @@ public class WebContainerLifecycle implements ModuleLifecycle {
     @Override
     public void stop() {
         logger.info("Stopping {} using {}", WebContainer.class.getSimpleName(), webContainer.getClass().getSimpleName());
-        webContainer.stop();
+        webContainer.stopContainer();
     }
 }

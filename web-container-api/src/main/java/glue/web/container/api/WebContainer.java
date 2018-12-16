@@ -1,4 +1,6 @@
-package glue.webcontainer.api;
+package glue.web.container.api;
+
+import javax.servlet.Servlet;
 
 /**
  * Web Container interface
@@ -16,14 +18,22 @@ public interface WebContainer {
      *
      * <p>This method starts the container, enabling the project to handle web requests.</p>
      */
-    void start();
+    void startContainer();
 
     /**
      * Stops the container
      *
      * <p>This method initiates the shutdown procedure of the web container.</p>
      */
-    void stop();
+    void stopContainer();
 
+    /**
+     * Starts a {@link Servlet} under the container
+     *
+     * <p>This method uses the provided {@link Servlet} instance to startContainer it under current web container.</p>
+     *
+     * @param servlet Servlet instance
+     */
+    void startServlet(Servlet servlet);
 
 }

@@ -1,4 +1,4 @@
-package glue.webcontainer.api;
+package glue.web.container.api;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class WebContainerLifecycleTests {
         lifecycle.start();
 
         // validation
-        verify(webContainer, times(1)).start();
+        verify(webContainer, times(1)).startContainer();
     }
 
     @Test
@@ -46,7 +46,7 @@ public class WebContainerLifecycleTests {
         lifecycle.stop();
 
         // validation
-        verify(webContainer, times(1)).stop();
+        verify(webContainer, times(1)).stopContainer();
     }
 
 }

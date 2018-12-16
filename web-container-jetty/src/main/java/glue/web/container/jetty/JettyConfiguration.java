@@ -1,4 +1,4 @@
-package glue.webcontainer.jetty;
+package glue.web.container.jetty;
 
 import glue.config.api.annotation.ConfigurationInterface;
 import glue.config.api.annotation.ConfigurationProperty;
