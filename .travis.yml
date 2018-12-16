@@ -1,11 +1,6 @@
 language: java
-
-jdk:
-  - openjdk8
-  - oraclejdk8
-
-os:
-  - linux
+jdk: openjdk8
+os: linux
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -18,7 +13,13 @@ cache:
 before_script:
   - chmod +x gradlew
 
-script:
-  - ./gradlew clean
-  - ./gradlew build
-  - ./gradlew test
+jobs:
+  include:
+    - stage: build
+      script: ./gradlew clean build -x test
+    - stage: test
+      script: ./gradlew test
+
+stages:
+  - build
+  - test
