@@ -2,10 +2,9 @@ package glue.config.api.extension;
 
 import glue.config.api.exception.ConfigurationException;
 import glue.config.api.translator.ConfigurationContainerTranslator;
+import glue.core.util.CdiUtils;
 import org.slf4j.Logger;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.lang.reflect.Method;
@@ -25,20 +24,19 @@ import java.util.Optional;
 @Singleton
 class ConfigurationContainerFacade {
 
-    private final Instance<ConfigurationContainerTranslator> cdiResolver;
+    private final CdiUtils cdiUtils;
     private final Logger logger;
 
     /**
-     * Package protected constructor with {@link ConfigurationContainerTranslator} CDI {@link Instance} gateway
-     * and {@link Logger} initialization
+     * Package protected constructor with {@link CdiUtils} and {@link Logger} initialization
      *
-     * @param cdiResolver CDI resolver
-     * @param logger      Logger instance
+     * @param cdiUtils CDI utility
+     * @param logger   Logger instance
      */
     @Inject
-    ConfigurationContainerFacade(final Instance<ConfigurationContainerTranslator> cdiResolver,
+    ConfigurationContainerFacade(final CdiUtils cdiUtils,
                                  final Logger logger) {
-        this.cdiResolver = cdiResolver;
+        this.cdiUtils = cdiUtils;
         this.logger = logger;
     }
 
@@ -52,12 +50,18 @@ class ConfigurationContainerFacade {
      */
     <T> boolean isAContainer(final Class<T> returnType) {
         logger.debug("Checking if {} is a container by looking for available ConfigurationContainerTranslator", returnType.getName());
-        final TypeLiteral<ConfigurationContainerTranslator<T>> translatorType =
-                new TypeLiteral<ConfigurationContainerTranslator<T>>() {
-                };
-        final Instance<ConfigurationContainerTranslator<T>> translator = cdiResolver.select(translatorType);
+        return getTranslator(returnType).isPresent();
+    }
 
-        return !translator.isUnsatisfied();
+    /**
+     * Retrieves a compatible instance of {@link ConfigurationContainerTranslator} for the provided return type
+     *
+     * @param returnType Container return type
+     * @param <T> Generic container return type
+     * @return Translator instance
+     */
+    private <T> Optional<ConfigurationContainerTranslator<T>> getTranslator(final Class<T> returnType) {
+        return cdiUtils.getTypedBean(ConfigurationContainerTranslator.class, returnType);
     }
 
     /**
@@ -75,20 +79,7 @@ class ConfigurationContainerFacade {
      */
     <T> Class<?> getTargetConfigurationValueType(final Class<T> containerType, final Type returnType) {
         logger.debug("Checking {} container value type for {}", containerType.getName(), returnType);
-        final TypeLiteral<ConfigurationContainerTranslator<T>> translatorType =
-                new TypeLiteral<ConfigurationContainerTranslator<T>>() {
-                };
-        final Instance<ConfigurationContainerTranslator<T>> translator = cdiResolver.select(translatorType);
-
-        if (translator.isAmbiguous())
-            throw new ConfigurationException(
-                    "Multiple ConfigurationContainerTranslator implementations found for " + containerType.getName() +
-                            ". Please fix by removing or qualifying the ones that shouldn't be used."
-            );
-
-        return Optional
-                .of(translator)
-                .map(Instance<ConfigurationContainerTranslator<T>>::get)
+        return getTranslator(containerType)
                 .orElseThrow(() -> new RuntimeException("Unknown error found"))
                 .getTargetType(returnType);
     }
@@ -111,20 +102,7 @@ class ConfigurationContainerFacade {
     <T, V> T translate(final V value, final Class<T> containerType) {
         logger.debug("Translating configuration value '{}' to container of type {}", value, containerType.getName());
 
-        final TypeLiteral<ConfigurationContainerTranslator<T>> translatorType =
-                new TypeLiteral<ConfigurationContainerTranslator<T>>() {
-                };
-        final Instance<ConfigurationContainerTranslator<T>> translator = cdiResolver.select(translatorType);
-
-        if (translator.isAmbiguous())
-            throw new ConfigurationException(
-                    "Multiple ConfigurationContainerTranslator implementations found for " + containerType.getName() +
-                            ". Please fix by removing or qualifying the ones that shouldn't be used."
-            );
-
-        return Optional
-                .of(translator)
-                .map(Instance<ConfigurationContainerTranslator<T>>::get)
+        return getTranslator(containerType)
                 .orElseThrow(() -> new RuntimeException("Unknown error found"))
                 .translate(value);
     }

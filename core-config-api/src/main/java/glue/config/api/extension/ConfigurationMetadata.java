@@ -95,6 +95,17 @@ class ConfigurationMetadata {
     }
 
     /**
+     * Returns if the configuration value is required and a exception should be thrown when null is found
+     *
+     * @return Required flag for the configuration
+     */
+    boolean isRequired() {
+        return getConfigurationPropertyAnnotation()
+                .map(ConfigurationProperty::required)
+                .orElse(false);
+    }
+
+    /**
      * Returns the generic return type definition
      *
      * @return Generic return type definition
@@ -111,6 +122,7 @@ class ConfigurationMetadata {
     String getDefaultValue() {
         return getConfigurationPropertyAnnotation()
                 .map(ConfigurationProperty::defaultValue)
+                .filter(value -> !ConfigurationProperty.NULL.equals(value))
                 .orElse(null);
     }
 

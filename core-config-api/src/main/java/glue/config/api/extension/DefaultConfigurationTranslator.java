@@ -57,6 +57,9 @@ class DefaultConfigurationTranslator<T> {
      */
     T translate(final String value) {
 
+        if (value == null)
+            return null;
+
         if (targetType.isEnum())
             return translateEnum(value);
 
@@ -77,8 +80,8 @@ class DefaultConfigurationTranslator<T> {
 
         throw new ConfigurationException(
                 "Configuration value '" + value + "' can't be automatically translated to " +
-                        targetType.getName() + " using default translation mechanism. Please implement a custom " +
-                        "ConfigurationValueTranslator for the type to solve this."
+                        targetType.getName() + " using default translation mechanism. Implement a custom " +
+                        "ConfigurationValueTranslator or ConfigurationContainerTranslator for the type to solve this."
         );
 
     }

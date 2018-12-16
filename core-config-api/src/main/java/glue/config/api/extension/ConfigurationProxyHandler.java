@@ -1,5 +1,6 @@
 package glue.config.api.extension;
 
+import glue.config.api.exception.ConfigurationException;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
@@ -103,7 +104,6 @@ class ConfigurationProxyHandler implements InvocationHandler {
         final ConfigurationMetadata metadata = new ConfigurationMetadata(calledMethod);
 
         final Class<?> returnType = metadata.getTargetType();
-
         if (containerFacade.isAContainer(returnType)) {
             final Class<?> targetType = containerFacade.getTargetConfigurationValueType(
                     returnType, metadata.getGenericReturnType()
@@ -134,6 +134,9 @@ class ConfigurationProxyHandler implements InvocationHandler {
         );
 
         final String configurationValue = resolver.resolve(metadata.getKey(), metadata.getDefaultValue());
+        if (configurationValue == null && metadata.isRequired())
+            throw new ConfigurationException("Configuration value for key '" + metadata.getKey() + "' is required but no value was found");
+
         return valueTranslator.translate(configurationValue, targetType);
     }
 

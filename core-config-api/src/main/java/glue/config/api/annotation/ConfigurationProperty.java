@@ -21,7 +21,26 @@ public @interface ConfigurationProperty {
 
     String NULL = "configApi.annotation.configurationProperty.nullMarker";
 
+    /**
+     * Defines the configuration key to be used. Values provided by this will be used alongside with prefix
+     * defined in {@link ConfigurationInterface}.
+     *
+     * @return Configuration key
+     */
     String key();
+
+    /**
+     * Defines the default value when no configuration is found from resolver. Defaults to null.
+     *
+     * @return Default value.
+     */
     String defaultValue() default NULL;
+
+    /**
+     * Defines if the configuration value is required and an exception should be thrown when null value is found.
+     *
+     * @return Flag for required configuration value
+     */
+    boolean required() default  false;
 
 }

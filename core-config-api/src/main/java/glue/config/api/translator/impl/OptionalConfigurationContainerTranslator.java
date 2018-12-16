@@ -54,7 +54,7 @@ public class OptionalConfigurationContainerTranslator implements ConfigurationCo
             throw new IllegalArgumentException("Provided generic type isn't a parameterized type");
 
         final ParameterizedType parameterizedType = (ParameterizedType) genericType;
-        if (!Optional.class.equals(parameterizedType.getOwnerType()))
+        if (!Optional.class.equals(parameterizedType.getRawType()))
             throw new IllegalArgumentException("Provided generic type isn't a Optional based type");
 
         if (parameterizedType.getActualTypeArguments() == null || parameterizedType.getActualTypeArguments().length < 1)

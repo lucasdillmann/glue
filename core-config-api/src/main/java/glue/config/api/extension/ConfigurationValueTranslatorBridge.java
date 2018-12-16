@@ -2,10 +2,9 @@ package glue.config.api.extension;
 
 import glue.config.api.exception.ConfigurationException;
 import glue.config.api.translator.ConfigurationValueTranslator;
+import glue.core.util.CdiUtils;
 import org.slf4j.Logger;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.TypeLiteral;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Optional;
@@ -23,20 +22,19 @@ import java.util.Optional;
 @Singleton
 class ConfigurationValueTranslatorBridge {
 
-    private final Instance<ConfigurationValueTranslator> cdiResolver;
+    private final CdiUtils cdiUtils;
     private final Logger logger;
 
     /**
-     * Package protected constructor with {@link ConfigurationValueTranslator} CDI {@link Instance} gateway
-     * and {@link Logger} initialization
+     * Package protected constructor with {@link CdiUtils} and {@link Logger} initialization
      *
-     * @param cdiResolver CDI resolver
+     * @param cdiUtils CDI resolver
      * @param logger Logger instance
      */
     @Inject
-    ConfigurationValueTranslatorBridge(final Instance<ConfigurationValueTranslator> cdiResolver,
+    ConfigurationValueTranslatorBridge(final CdiUtils cdiUtils,
                                        final Logger logger) {
-        this.cdiResolver = cdiResolver;
+        this.cdiUtils = cdiUtils;
         this.logger = logger;
     }
 
@@ -58,20 +56,10 @@ class ConfigurationValueTranslatorBridge {
 
         logger.debug("Translating configuration value '{}' to {}", value, targetType.getName());
 
-        final TypeLiteral<ConfigurationValueTranslator<T>> translatorType =
-                new TypeLiteral<ConfigurationValueTranslator<T>>() {
-                };
-        final Instance<ConfigurationValueTranslator<T>> translator = cdiResolver.select(translatorType);
+        final Optional<ConfigurationValueTranslator<T>> translator = cdiUtils
+                .getTypedBean(ConfigurationValueTranslator.class, targetType);
 
-        if (translator.isAmbiguous())
-            throw new ConfigurationException(
-                    "Multiple ConfigurationValueTraslator implementations found for " + targetType.getName() +
-                            ". Please fix by removing or qualifying the ones that shouldn't be used."
-            );
-
-        return Optional.of(translator)
-                .filter(instance -> !instance.isUnsatisfied())
-                .map(Instance<ConfigurationValueTranslator<T>>::get)
+        return translator
                 .orElseGet(() -> {
                     logger.debug("No custom translator available for {}. Using the default translation mechanism.", targetType.getName());
                     return configurationValue ->

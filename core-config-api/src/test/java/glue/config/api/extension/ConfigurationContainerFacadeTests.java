@@ -1,16 +1,14 @@
 package glue.config.api.extension;
 
 import glue.config.api.translator.ConfigurationContainerTranslator;
+import glue.core.util.CdiUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.util.TypeLiteral;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
@@ -18,6 +16,7 @@ import java.util.Random;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -32,7 +31,7 @@ public class ConfigurationContainerFacadeTests {
     @Mock
     private Logger logger;
     @Mock
-    private Instance<ConfigurationContainerTranslator> translatorInstance;
+    private CdiUtils cdiUtils;
     @Mock
     private ConfigurationContainerTranslator translator;
 
@@ -40,9 +39,8 @@ public class ConfigurationContainerFacadeTests {
 
     @Before
     public void setup() {
-        doReturn(translator).when(translatorInstance).get();
-        doReturn(translatorInstance).when(translatorInstance).select(Matchers.any(TypeLiteral.class));
-        this.facade = new ConfigurationContainerFacade(translatorInstance, logger);
+        doReturn(Optional.of(translator)).when(cdiUtils).getTypedBean(any(), any(), any());
+        this.facade = new ConfigurationContainerFacade(cdiUtils, logger);
     }
 
     @Test
@@ -50,6 +48,7 @@ public class ConfigurationContainerFacadeTests {
         // scenario
         final Integer expectedValue = new Random().nextInt();
         doReturn(Optional.ofNullable(expectedValue)).when(translator).translate(expectedValue);
+        doReturn(Optional.of(translator)).when(cdiUtils).getTypedBean(ConfigurationContainerTranslator.class, Optional.class);
 
         // execution
         final Optional<Integer> translatedValue = facade.translate(expectedValue, Optional.class);
@@ -62,11 +61,14 @@ public class ConfigurationContainerFacadeTests {
 
     @Test
     public void shouldCheckForAvailableTranslatorWhenCheckingIfIsContainer() {
+        // scenario
+        doReturn(Optional.empty()).when(cdiUtils).getTypedBean(ConfigurationContainerTranslator.class, Optional.class);
+
         // execution
         facade.isAContainer(Optional.class);
 
         // validation
-        verify(translatorInstance, times(1)).isUnsatisfied();
+        verify(cdiUtils, times(1)).getTypedBean(ConfigurationContainerTranslator.class, Optional.class);
     }
 
     @Test
@@ -90,6 +92,7 @@ public class ConfigurationContainerFacadeTests {
             }
         };
         doReturn(expectedType).when(translator).getTargetType(parameterizedType);
+        doReturn(Optional.of(translator)).when(cdiUtils).getTypedBean(ConfigurationContainerTranslator.class, Optional.class);
 
         // execution
         final Class<?> actualType = facade.getTargetConfigurationValueType(Optional.class, parameterizedType);

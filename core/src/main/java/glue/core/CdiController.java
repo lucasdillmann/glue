@@ -3,6 +3,8 @@ package glue.core;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 
+import java.util.Objects;
+
 /**
  * Glue IoC controller class
  *
@@ -17,6 +19,7 @@ import org.jboss.weld.environment.se.WeldContainer;
  */
 class CdiController {
 
+    private final Class<?> applicationMainClass;
     private final WeldContainer injector;
 
     /**
@@ -27,7 +30,9 @@ class CdiController {
      *
      * @param applicationMainClass Application main class
      */
-    CdiController(Class<?> applicationMainClass) {
+    CdiController(final Class<?> applicationMainClass) {
+        Objects.requireNonNull(applicationMainClass);
+        this.applicationMainClass = applicationMainClass;
         this.injector = new Weld()
                 .enableDiscovery()
                 .scanClasspathEntries()
@@ -40,11 +45,11 @@ class CdiController {
      * Starts the application lifecycle
      *
      * <p>This modules uses the IoC context to start the application lifecycle. This is done by creating and firing-up
-     * the {@link LifecycleController} class.</p>
+     * the {@link GlueApplicationContext} class, asking to start the application lifecycle.</p>
      */
     void start() {
-        injector.select(LifecycleController.class)
-                .get()
-                .start();
+        final GlueApplicationContext context = injector.select(GlueApplicationContext.class).get();
+        context.setStartupClass(applicationMainClass);
+        context.start();
     }
 }

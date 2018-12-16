@@ -2,6 +2,7 @@ package glue.persistence.datasource.api;
 
 import glue.core.exception.StartupException;
 import glue.core.module.ModuleLifecycle;
+import glue.core.module.Priority;
 import org.slf4j.Logger;
 
 import javax.enterprise.inject.Default;
@@ -64,5 +65,10 @@ public class DataSourceModule implements ModuleLifecycle {
      */
     @Override
     public void stop() {
+    }
+
+    @Override
+    public Priority getStartPriority() {
+        return Priority.HIGH;
     }
 }

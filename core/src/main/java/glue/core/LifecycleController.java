@@ -86,7 +86,7 @@ class LifecycleController {
      * that the application is starting and they need to do whatever they need to start handling requests.</p>
      */
     void start() {
-        logger.info("Welcome to Glue. Starting up application...");
+        logger.info("Starting up application lifecycle");
         jvmListener.start(this::stop);
 
         getSortedModules().forEach(ModuleLifecycle::start);
