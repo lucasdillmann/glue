@@ -29,7 +29,9 @@ public class ConfigurationProxyHandlerTests {
     @Mock
     private ConfigurationResolverBridge resolver;
     @Mock
-    private ConfigurationTranslatorBridge translator;
+    private ConfigurationValueTranslatorBridge translator;
+    @Mock
+    private ConfigurationContainerFacade containerFacade;
     @Mock
     private Logger logger;
     @Mock
@@ -39,7 +41,7 @@ public class ConfigurationProxyHandlerTests {
 
     @Before
     public void setup() {
-        this.handler = new ConfigurationProxyHandler(resolver, translator, logger);
+        this.handler = new ConfigurationProxyHandler(resolver, translator, containerFacade, logger);
     }
 
     @Test

@@ -126,8 +126,8 @@ public class DefaultConfigurationTranslatorTests {
         final String className = DefaultConfigurationTranslatorArtifacts.Uncompatible.class.getName();
         final String input = Double.toString(new Random().nextDouble());
         final String expectedMessage = "Configuration value '" + input + "' can't be automatically translated to " +
-                className + " using default translation mechanism. Please implement a custom " +
-                "ConfigurationValueTranslator for the type to solve this.";
+                className + " using default translation mechanism. Implement a custom " +
+                "ConfigurationValueTranslator or ConfigurationContainerTranslator for the type to solve this.";
         expectedException.expect(ConfigurationException.class);
         expectedException.expectMessage(equalTo(expectedMessage));
 

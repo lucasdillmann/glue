@@ -9,7 +9,7 @@ import org.junit.runners.Suite;
         ConfigurationProxyFactoryTests.class,
         ConfigurationProxyHandlerTests.class,
         ConfigurationResolverBridgeTests.class,
-        ConfigurationTranslatorBridgeTests.class,
+        ConfigurationValueTranslatorBridgeTests.class,
         DefaultConfigurationTranslatorTests.class
 })
 public class UnitTestSuite {

@@ -4,6 +4,7 @@ import glue.config.api.annotation.ConfigurationInterface;
 import glue.config.api.annotation.ConfigurationProperty;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -94,6 +95,26 @@ class ConfigurationMetadata {
     }
 
     /**
+     * Returns if the configuration value is required and a exception should be thrown when null is found
+     *
+     * @return Required flag for the configuration
+     */
+    boolean isRequired() {
+        return getConfigurationPropertyAnnotation()
+                .map(ConfigurationProperty::required)
+                .orElse(false);
+    }
+
+    /**
+     * Returns the generic return type definition
+     *
+     * @return Generic return type definition
+     */
+    Type getGenericReturnType() {
+        return method.getGenericReturnType();
+    }
+
+    /**
      * Returns the default configuration value using {@link ConfigurationProperty} annotation
      *
      * @return Default configuration value
@@ -101,6 +122,7 @@ class ConfigurationMetadata {
     String getDefaultValue() {
         return getConfigurationPropertyAnnotation()
                 .map(ConfigurationProperty::defaultValue)
+                .filter(value -> !ConfigurationProperty.NULL.equals(value))
                 .orElse(null);
     }
 

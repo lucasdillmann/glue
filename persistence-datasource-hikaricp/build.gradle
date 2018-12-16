@@ -1,0 +1,7 @@
+dependencies {
+    compile project(":persistence-datasource-api")
+    compile project(":core-config-api")
+    compile 'com.zaxxer:HikariCP:3.1.0'
+
+    testCompile 'com.h2database:h2:1.4.197'
+}

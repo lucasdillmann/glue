@@ -1,0 +1,8 @@
+dependencies {
+    compile project(":persistence-jpa-api")
+    compile project(":persistence-datasource-api")
+    compile project(":core-config-api")
+    compile 'org.hibernate:hibernate-core:5.3.7.Final'
+
+    testCompile 'com.h2database:h2:1.4.197'
+}

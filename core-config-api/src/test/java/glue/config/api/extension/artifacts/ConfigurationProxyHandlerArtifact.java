@@ -3,6 +3,8 @@ package glue.config.api.extension.artifacts;
 import glue.config.api.annotation.ConfigurationInterface;
 import glue.config.api.annotation.ConfigurationProperty;
 
+import java.util.Optional;
+
 /**
  * Test artifact for {@link glue.config.api.extension.ConfigurationProxyHandlerTests}
  *
@@ -14,6 +16,9 @@ public interface ConfigurationProxyHandlerArtifact {
 
     @ConfigurationProperty(key = "test")
     Integer getTest();
+
+    @ConfigurationProperty(key = "test")
+    Optional<Integer> getTestWithOptional();
 
     default Integer getDefaultValue() {
         return 123;
