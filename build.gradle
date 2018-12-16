@@ -31,7 +31,7 @@ allprojects {
 dependencies {
     testCompile project(":core")
     testCompile project(":core-logger")
-    testCompile project(":core-config-properties-file")
+    testCompile project(":core-config-propertiesfile")
     testCompile project(":web-container-api")
     testCompile project(":web-container-jetty")
     testCompile project(":persistence-jpa-api")

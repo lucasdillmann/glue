@@ -5,7 +5,7 @@ include 'core',
         'core-logger',
         'core-config-api',
         'core-config-deltaspike',
-        'core-config-properties-file'
+        'core-config-propertiesfile'
 
 // Web Container
 include 'web-container-api',
