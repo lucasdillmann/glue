@@ -11,9 +11,14 @@ include 'core',
 include 'web-container-api',
         'web-container-jetty'
 
+// JAX-RS
+include 'web-jaxrs-api',
+        'web-jaxrs-jersey'
+
 // Persistence
 include 'persistence-jpa-api',
         'persistence-jpa-hibernate',
         'persistence-datasource-api',
         'persistence-datasource-hikaricp'
+
 
