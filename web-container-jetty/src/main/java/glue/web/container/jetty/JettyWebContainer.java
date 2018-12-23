@@ -11,7 +11,12 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * Jetty implementation for {@link WebContainer}
@@ -79,8 +84,18 @@ public class JettyWebContainer implements WebContainer {
         try {
             server.stop();
         } catch (final Exception ex) {
-            new ExceptionUtils().rethrowAsUnchecked(ex);
+            logger.warn("Error stopping Jetty", ex);
         }
+    }
+
+    /**
+     * Returns current servlet context
+     *
+     * @return Servlet context
+     */
+    @Override
+    public ServletContext getServletContext() {
+        return contextHandler.getServletContext();
     }
 
     /**
@@ -89,15 +104,27 @@ public class JettyWebContainer implements WebContainer {
      * <p>This method uses the provided {@link Servlet} instance to startContainer it under current web container.</p>
      *
      * @param servlet Servlet instance
+     * @param contextPath Context path
+     * @param initAttributes Init attributes
      */
     @Override
-    public void startServlet(final Servlet servlet) {
+    public void startServlet(final Servlet servlet,
+                             final String contextPath,
+                             final Map<String, String> initAttributes) {
         Objects.requireNonNull(servlet);
-        logger.info("Starting servlet {}", servlet.getServletInfo());
+        Objects.requireNonNull(contextPath);
+        logger.debug("Starting servlet {} at context {}", servlet.getClass().getName(), contextPath);
 
         final ServletHolder holder = new ServletHolder(servlet);
-        final String contextPath = servlet.getServletConfig().getServletContext().getContextPath();
+        holder.setEnabled(true);
+        holder.setDisplayName(servlet.getServletConfig().getServletName());
+        Optional.ofNullable(initAttributes)
+                .map(Map::entrySet)
+                .map(Set::stream)
+                .orElse(Stream.empty())
+                .forEach(pair -> holder.setInitParameter(pair.getKey(), pair.getValue()));
+
         contextHandler.addServlet(holder, contextPath);
-        logger.info("Servlet {} started at context path {}", servlet.getServletInfo(), contextPath);
+        logger.info("Servlet {} started at context path {}", servlet.getServletConfig().getServletName(), contextPath);
     }
 }

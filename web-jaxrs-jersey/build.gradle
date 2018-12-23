@@ -1,0 +1,8 @@
+dependencies {
+    compile project(":web-jaxrs-api")
+    compile project(":core-config-api")
+    compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.27'
+    compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: '2.27'
+    compile group: 'org.glassfish.jersey.inject', name: 'jersey-hk2', version: '2.27'
+    compile group: 'org.glassfish.jersey.ext.cdi', name: 'jersey-weld2-se', version: '2.27'
+}

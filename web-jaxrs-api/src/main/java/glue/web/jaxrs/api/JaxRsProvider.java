@@ -1,6 +1,7 @@
 package glue.web.jaxrs.api;
 
 import javax.servlet.Servlet;
+import java.util.Map;
 
 /**
  * JAX-RS provider definition interface
@@ -21,7 +22,7 @@ public interface JaxRsProvider {
      *
      * @return Servlet instance from provider implementation
      */
-    Servlet start();
+    void start();
 
     /**
      * Notifies provider about application shutdown
@@ -30,4 +31,24 @@ public interface JaxRsProvider {
      */
     void stop();
 
+    /**
+     * Returns the provider servlet context path
+     *
+     * @return Servlet context path
+     */
+    String getContextPath();
+
+    /**
+     * Returns servlet instance for the provider
+     *
+     * @return Servlet instance
+     */
+    Servlet getServlet();
+
+    /**
+     * Returns all servlet init parameters
+     *
+     * @return Map of init parameters
+     */
+    Map<String, String> getServletInitParameters();
 }

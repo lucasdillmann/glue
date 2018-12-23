@@ -1,6 +1,8 @@
 package glue.web.container.api;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import java.util.Map;
 
 /**
  * Web Container interface
@@ -28,12 +30,21 @@ public interface WebContainer {
     void stopContainer();
 
     /**
+     * Returns current servlet context
+     *
+     * @return Servlet context
+     */
+    ServletContext getServletContext();
+
+    /**
      * Starts a {@link Servlet} under the container
      *
      * <p>This method uses the provided {@link Servlet} instance to startContainer it under current web container.</p>
      *
      * @param servlet Servlet instance
+     * @param contextPath Context path
+     * @param initAttributes Init attributes
      */
-    void startServlet(Servlet servlet);
+    void startServlet(Servlet servlet, String contextPath, Map<String, String> initAttributes);
 
 }

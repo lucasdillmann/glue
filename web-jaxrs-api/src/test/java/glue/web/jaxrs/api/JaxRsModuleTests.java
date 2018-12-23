@@ -2,7 +2,9 @@ package glue.web.jaxrs.api;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
 import static org.mockito.Mockito.times;
@@ -14,6 +16,7 @@ import static org.mockito.Mockito.verify;
  * @author Lucas Dillmann
  * @since 1.0.0, 2018-12-16
  */
+@RunWith(MockitoJUnitRunner.class)
 public class JaxRsModuleTests {
 
     @Mock

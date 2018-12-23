@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import javax.servlet.Servlet;
+import java.util.Map;
 
 /**
  * JAX-RS installer facade
@@ -41,10 +42,14 @@ class JaxRsInstaller {
      */
     void install() {
         logger.info("Starting JAX-RS provider {}", provider.getClass().getSimpleName());
-        final Servlet servlet = provider.start();
+        provider.start();
+
+        final Servlet servlet = provider.getServlet();
+        final String contextPath = provider.getContextPath();
+        final Map<String, String> initAttributes = provider.getServletInitParameters();
 
         logger.info("Starting JAX-RS under current web container");
-        container.startServlet(servlet);
+        container.startServlet(servlet, contextPath, initAttributes);
     }
 
     /**

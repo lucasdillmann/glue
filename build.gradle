@@ -38,6 +38,8 @@ dependencies {
     testCompile project(":persistence-jpa-hibernate")
     testCompile project(":persistence-datasource-api")
     testCompile project(":persistence-datasource-hikaricp")
+    testCompile project(":web-jaxrs-api")
+    testCompile project(":web-jaxrs-jersey")
 
     testCompile group: 'org.postgresql', name: 'postgresql', version: '42.2.2'
 }

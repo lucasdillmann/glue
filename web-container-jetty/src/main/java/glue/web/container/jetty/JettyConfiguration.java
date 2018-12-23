@@ -14,12 +14,16 @@ import glue.config.api.annotation.ConfigurationProperty;
 @ConfigurationInterface(prefix = "glue.webcontainer.jetty.")
 public interface JettyConfiguration {
 
-    /**
-     * Returns the TCP port number where the Jetty should listen. Defaults to "8080".
-     *
-     * @return TCP port where Jetty should listen
-     */
     @ConfigurationProperty(key = "port", defaultValue = "8080")
     Integer getPort();
+
+    @ConfigurationProperty(key = "host", defaultValue = "0.0.0.0")
+    String getHost();
+
+    @ConfigurationProperty(key = "showJettyVersion", defaultValue = "false")
+    Boolean isShowJettyVersion();
+
+    @ConfigurationProperty(key = "showXPoweredBy", defaultValue = "false")
+    Boolean isShowXPoweredBy();
 
 }

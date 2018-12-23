@@ -1,6 +1,6 @@
 package glue.web.container.jetty;
 
-import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.*;
 import org.slf4j.Logger;
 
 import javax.enterprise.inject.Produces;
@@ -41,8 +41,19 @@ public class JettyServerProducer {
     @Singleton
     public Server server() {
         logger.debug("Producing a Jetty Server instance");
-        logger.debug("Server listen port: {}", configuration.getPort());
+        logger.info("Creating Jetty server for {}:{}", configuration.getHost(), configuration.getPort());
 
-        return new Server(configuration.getPort());
+        final Server server = new Server();
+        final HttpConfiguration httpConfiguration = new HttpConfiguration();
+        final HttpConnectionFactory connectionFactory = new HttpConnectionFactory(httpConfiguration);
+        final ServerConnector connector = new ServerConnector(server, connectionFactory);
+
+        httpConfiguration.setSendServerVersion(configuration.isShowJettyVersion());
+        httpConfiguration.setSendXPoweredBy(configuration.isShowXPoweredBy());
+        connector.setPort(configuration.getPort());
+        connector.setHost(configuration.getHost());
+        server.setConnectors(new Connector[] { connector });
+
+        return server;
     }
 }
