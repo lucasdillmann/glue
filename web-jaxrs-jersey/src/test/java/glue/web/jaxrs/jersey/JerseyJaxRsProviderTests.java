@@ -1,6 +1,7 @@
 package glue.web.jaxrs.jersey;
 
 import glue.core.GlueApplicationContext;
+import org.glassfish.jersey.servlet.ServletContainer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +30,7 @@ import static org.mockito.Mockito.*;
 public class JerseyJaxRsProviderTests {
 
     @Mock
-    private Servlet servlet;
+    private ServletContainer servlet;
     @Mock
     private JerseyConfiguration configuration;
     @Mock
@@ -37,12 +38,14 @@ public class JerseyJaxRsProviderTests {
     @Mock
     private Logger logger;
 
+    private JerseyApplication application;
     private JerseyJaxRsProvider provider;
 
     @Before
     public void setup() {
         doReturn(getClass()).when(applicationContext).getStartupClass();
-        this.provider = new JerseyJaxRsProvider(servlet, configuration, applicationContext, logger);
+        this.application = new JerseyApplication();
+        this.provider = new JerseyJaxRsProvider(servlet, application, configuration, applicationContext, logger);
     }
 
     @Test

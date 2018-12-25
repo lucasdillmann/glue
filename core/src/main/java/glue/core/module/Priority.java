@@ -13,7 +13,7 @@ public enum Priority {
     /**
      * Maximum priority. Modules using this option should be started/stopped first.
      */
-    HIGH(2),
+    HIGH(0),
 
     /**
      * Default, regular priority. Modules using this option will be started or stopped regularly.
@@ -23,7 +23,7 @@ public enum Priority {
     /**
      * Minimum priority. Modules using this option should be started/stopped last.
      */
-    LOW(0);
+    LOW(2);
 
     private final int intValue;
 

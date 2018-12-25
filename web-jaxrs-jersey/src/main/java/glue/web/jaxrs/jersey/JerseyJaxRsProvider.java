@@ -2,11 +2,14 @@ package glue.web.jaxrs.jersey;
 
 import glue.core.GlueApplicationContext;
 import glue.web.jaxrs.api.JaxRsProvider;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.Servlet;
+import javax.ws.rs.core.Application;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,22 +26,24 @@ public class JerseyJaxRsProvider implements JaxRsProvider {
 
     static final String JERSEY_PACKAGE_SCAN_PROPERTY = "jersey.config.server.provider.packages";
 
-    private final Servlet servlet;
+    private final ServletContainer servlet;
     private final JerseyConfiguration configuration;
     private final GlueApplicationContext applicationContext;
     private final Logger logger;
+    private final ResourceConfig resourceConfig;
 
     /**
      * Constructor with {@link Servlet}, {@link JerseyConfiguration}, {@link GlueApplicationContext} and
      * {@link Logger} initialization
      *
-     * @param servlet Jersey servlet
-     * @param configuration Jersey configuration
+     * @param servlet            Jersey servlet
+     * @param configuration      Jersey configuration
      * @param applicationContext Glue application context
-     * @param logger Logger
+     * @param logger             Logger
      */
     @Inject
-    public JerseyJaxRsProvider(final @JerseyServlet Servlet servlet,
+    public JerseyJaxRsProvider(final @JerseyServlet ServletContainer servlet,
+                               final Application application,
                                final JerseyConfiguration configuration,
                                final GlueApplicationContext applicationContext,
                                final Logger logger) {
@@ -46,6 +51,7 @@ public class JerseyJaxRsProvider implements JaxRsProvider {
         this.logger = logger;
         this.applicationContext = applicationContext;
         this.configuration = configuration;
+        this.resourceConfig = ResourceConfig.forApplication(application);
     }
 
     /**
@@ -58,7 +64,8 @@ public class JerseyJaxRsProvider implements JaxRsProvider {
      */
     @Override
     public void start() {
-        // NO-OP
+        logger.info("Reloading Jersey with updated configurations");
+        this.servlet.reload(resourceConfig);
     }
 
     /**
@@ -114,4 +121,37 @@ public class JerseyJaxRsProvider implements JaxRsProvider {
         parameters.put(JERSEY_PACKAGE_SCAN_PROPERTY, applicationPackage);
         return parameters;
     }
+
+    /**
+     * Register a component class under JAX-RS context
+     *
+     * @param componentClass Component class
+     * @param contracts      Contract classes
+     */
+    @Override
+    public void registerClass(final Class<?> componentClass, final Class<?>... contracts) {
+        if (contracts == null || contracts.length == 0)
+            resourceConfig.register(componentClass);
+        else
+            resourceConfig.register(componentClass, contracts);
+
+        logger.info("Class registered: {}", componentClass.getName());
+    }
+
+    /**
+     * Registers a singleton instance of a object and bound it to contract classes
+     *
+     * @param singletonInstance Singleton instance to be registered
+     * @param contracts         Contract classes
+     */
+    @Override
+    public void registerSingleton(final Object singletonInstance, final Class<?>... contracts) {
+        if (contracts == null || contracts.length == 0)
+            resourceConfig.register(singletonInstance);
+        else
+            resourceConfig.register(singletonInstance, contracts);
+
+        logger.info("Singleton registered: {}", singletonInstance);
+    }
+
 }

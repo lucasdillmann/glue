@@ -27,7 +27,7 @@ public class JerseyServletProvider {
      * Constructor with {@link JerseyServletConfig} and {@link Logger} initialization
      *
      * @param servletConfig Servlet config
-     * @param logger Logger
+     * @param logger        Logger
      */
     @Inject
     public JerseyServletProvider(final JerseyServletConfig servletConfig, final Logger logger) {
@@ -44,7 +44,7 @@ public class JerseyServletProvider {
     @Produces
     @JerseyServlet
     @Singleton
-    public Servlet jerseyServlet() throws ServletException {
+    public ServletContainer jerseyServlet() throws ServletException {
         logger.debug("Producing Servlet for Jersey using configuration from {}", servletConfig.getClass().getName());
         final ServletContainer container = new ServletContainer();
         container.init(servletConfig);
