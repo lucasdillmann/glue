@@ -32,6 +32,22 @@ public interface JaxRsProvider {
     void stop();
 
     /**
+     * Register a component class under JAX-RS context
+     *
+     * @param componentClass Component class
+     * @param contracts      Contract classes
+     */
+    void registerClass(Class<?> componentClass, Class<?>... contracts);
+
+    /**
+     * Registers a singleton instance of a object and bound it to contract classes
+     *
+     * @param singletonInstance Singleton instance to be registered
+     * @param contracts         Contract classes
+     */
+    void registerSingleton(Object singletonInstance, Class<?>... contracts);
+
+    /**
      * Returns the provider servlet context path
      *
      * @return Servlet context path

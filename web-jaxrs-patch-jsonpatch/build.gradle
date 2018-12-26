@@ -1,0 +1,4 @@
+dependencies {
+    compile project(":web-jaxrs-patch-api")
+    compile group: 'com.github.fge', name: 'json-patch', version: '1.9'
+}

@@ -1,6 +1,7 @@
 package glue.web.jaxrs.api;
 
 import glue.core.module.ModuleLifecycle;
+import glue.core.module.Priority;
 import org.slf4j.Logger;
 
 import javax.enterprise.inject.Default;
@@ -28,6 +29,11 @@ public class JaxRsModule implements ModuleLifecycle {
     public JaxRsModule(final JaxRsInstaller installer, final Logger logger) {
         this.installer = installer;
         this.logger = logger;
+    }
+
+    @Override
+    public Priority getStartPriority() {
+        return Priority.LOW;
     }
 
     /**

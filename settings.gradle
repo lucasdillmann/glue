@@ -13,12 +13,14 @@ include 'web-container-api',
 
 // JAX-RS
 include 'web-jaxrs-api',
-        'web-jaxrs-jersey'
+        'web-jaxrs-jersey',
+        'web-jaxrs-jersey-databind',
+        'web-jaxrs-patch-api',
+        'web-jaxrs-patch-jsonpatch',
+        'web-jaxrs-patch-jsonmergepatch'
 
 // Persistence
 include 'persistence-jpa-api',
         'persistence-jpa-hibernate',
         'persistence-datasource-api',
         'persistence-datasource-hikaricp'
-
-

@@ -1,0 +1,5 @@
+dependencies {
+    compile project(":web-jaxrs-api")
+
+    testCompile group: 'org.glassfish.jersey.core', name: 'jersey-common', version: '2.27'
+}

@@ -12,6 +12,7 @@ import javax.inject.Singleton;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -89,7 +90,14 @@ class LifecycleController {
         logger.info("Starting up application lifecycle");
         jvmListener.start(this::stop);
 
-        getSortedModules().forEach(ModuleLifecycle::start);
+        try {
+            getSortedModules(ModuleLifecycle::getStartPriority).forEach(ModuleLifecycle::start);
+        } catch (final Exception ex) {
+            logger.error("Error starting application", ex);
+            stop();
+            return;
+        }
+
         final Long startupTime = System.currentTimeMillis() - GlueApplication.getStartupTime();
         logger.info("Glue started after {} milliseconds", startupTime);
     }
@@ -104,7 +112,7 @@ class LifecycleController {
     void stop() {
         logger.info("Glue is shutting down");
         jvmListener.stop();
-        getSortedModules().forEach(ModuleLifecycle::stop);
+        getSortedModules(ModuleLifecycle::getStopPriority).forEach(ModuleLifecycle::stop);
 
         logger.info("Good bye");
         shutdownJvm();
@@ -121,13 +129,16 @@ class LifecycleController {
     /**
      * Create and returns a sorted stream from the detected modules using the priority to do the sorting
      *
+     * @param priorityProvider Lambda function for priority method
      * @return Sorted stream from the detected modules
      */
-    private Stream<ModuleLifecycle> getSortedModules() {
+    private Stream<ModuleLifecycle> getSortedModules(final Function<ModuleLifecycle, Priority> priorityProvider) {
         return modules
                 .stream()
                 .sorted(Comparator.comparing(
-                        module -> Optional.ofNullable(module.getStopPriority()).orElse(Priority.REGULAR).asInteger()
+                        module -> Optional
+                                .ofNullable(priorityProvider.apply(module))
+                                .orElse(Priority.REGULAR).asInteger()
                 ));
     }
 }

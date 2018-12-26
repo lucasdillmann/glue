@@ -64,7 +64,7 @@ class ShutdownListener {
         if (Objects.isNull(currentListener))
             throw new IllegalStateException("The listeneing can't be stopped since it isn't running");
 
-        logger.info("Stopping te listening for JVM shutdown events");
+        logger.info("Stopping the listening for JVM shutdown events");
         Runtime.getRuntime().removeShutdownHook(currentListener);
         currentListener = null;
     }
