@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
+import java.util.Optional;
 
 /**
  * SLF4J {@link Logger} provider
@@ -30,9 +31,13 @@ public class LoggerProvider {
      * @return Produced logger
      */
     @Produces
-    public Logger logger(InjectionPoint injectionPoint) {
+    public Logger logger(final InjectionPoint injectionPoint) {
         final Class<?> client = injectionPoint.getMember().getDeclaringClass();
-        return LoggerFactory.getLogger(client);
+        final String loggerName = Optional
+                .ofNullable(client)
+                .map(Class::getName)
+                .orElse(Logger.ROOT_LOGGER_NAME);
+        return LoggerFactory.getLogger(loggerName);
     }
 
 }

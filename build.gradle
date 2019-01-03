@@ -31,11 +31,12 @@ allprojects {
 dependencies {
     testCompile project(":core")
     testCompile project(":core-logger")
-    testCompile project(":core-config-propertiesfile")
+    testCompile project(":core-config-deltaspike")
     testCompile project(":web-container-api")
     testCompile project(":web-container-jetty")
     testCompile project(":persistence-jpa-api")
     testCompile project(":persistence-jpa-hibernate")
+    testCompile project(":persistence-jpa-repository")
     testCompile project(":persistence-datasource-api")
     testCompile project(":persistence-datasource-hikaricp")
     testCompile project(":web-jaxrs-api")
@@ -45,5 +46,6 @@ dependencies {
     testCompile project(":web-jaxrs-patch-jsonpatch")
     testCompile project(":web-jaxrs-patch-jsonmergepatch")
 
-    testCompile group: 'org.postgresql', name: 'postgresql', version: '42.2.2'
+    testCompile group: 'com.h2database', name: 'h2', version: '1.4.197'
+
 }

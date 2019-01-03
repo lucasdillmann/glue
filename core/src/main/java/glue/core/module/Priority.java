@@ -18,12 +18,12 @@ public enum Priority {
     /**
      * Default, regular priority. Modules using this option will be started or stopped regularly.
      */
-    REGULAR(1),
+    REGULAR(1000),
 
     /**
      * Minimum priority. Modules using this option should be started/stopped last.
      */
-    LOW(2);
+    LOW(2000);
 
     private final int intValue;
 

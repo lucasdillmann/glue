@@ -21,22 +21,18 @@ public class JaxRsPatchModuleLifecycle implements ModuleLifecycle {
 
     private final Logger logger;
     private final JaxRsProvider provider;
-    private final PatchReaderInterceptor interceptor;
 
     /**
-     * Constructor with {@link JaxRsProvider}, {@link PatchReaderInterceptor} and {@link Logger} initialization
+     * Constructor with {@link JaxRsProvider} and {@link Logger} initialization
      *
      * @param provider JAX-RS provider
-     * @param interceptor PATCH interceptor
      * @param logger Logger
      */
     @Inject
     public JaxRsPatchModuleLifecycle(final JaxRsProvider provider,
-                                     final PatchReaderInterceptor interceptor,
                                      final Logger logger) {
         this.logger = logger;
         this.provider = provider;
-        this.interceptor = interceptor;
     }
 
     /**
@@ -47,7 +43,7 @@ public class JaxRsPatchModuleLifecycle implements ModuleLifecycle {
      */
     @Override
     public void start() {
-        provider.registerSingleton(interceptor);
+        provider.registerClass(PatchReaderInterceptor.class);
         logger.info("PATCH interceptor started under JAX-RS context");
     }
 
@@ -58,6 +54,6 @@ public class JaxRsPatchModuleLifecycle implements ModuleLifecycle {
      */
     @Override
     public void stop() {
-
+        // NO-OP
     }
 }

@@ -2,6 +2,7 @@ package glue.core;
 
 import glue.core.exception.StartupException;
 import glue.core.module.ModuleLifecycle;
+import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -9,7 +10,8 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.slf4j.Logger;
 
 import javax.enterprise.inject.Instance;
@@ -27,7 +29,8 @@ import static org.mockito.Mockito.*;
  * @author Lucas Dillmann
  * @since 1.0.0, 2018-11-26
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(GlueApplicationContext.class)
 public class LifecycleControllerTests {
 
     @Mock
@@ -44,6 +47,12 @@ public class LifecycleControllerTests {
     private ShutdownListener shutdownListenerDelegate;
     @Mock
     private Logger loggerDelegate;
+    @Mock
+    private GlueApplicationContext applicationContext;
+    @Mock
+    private Instance<GlueApplicationContext> applicationContextInstance;
+    @Mock
+    private WeldContainer weldContainer;
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
@@ -51,16 +60,18 @@ public class LifecycleControllerTests {
     public void setup() {
         GlueApplication.initStartupTime();
         doReturn(modulesIterator).when(modules).iterator();
+        doReturn(applicationContext).when(applicationContextInstance).get();
         doReturn(modulesSpliterator).when(modules).spliterator();
         doReturn(shutdownListenerDelegate).when(shutdownListener).get();
         doReturn(loggerDelegate).when(logger).get();
+        doReturn(weldContainer).when(applicationContext).getIocProvider();
         doReturn(true).when(modulesIterator).hasNext();
     }
 
     @Test
     public void shouldStartJvmShutdownListener() {
         // scenario
-        final LifecycleController controller = new LifecycleController(modules, logger, shutdownListener);
+        final LifecycleController controller = new LifecycleController(modules, logger, shutdownListener, applicationContextInstance);
 
         // execution
         controller.start();
@@ -77,7 +88,7 @@ public class LifecycleControllerTests {
         doCallRealMethod().when(testModule).getStopPriority();
         final List<ModuleLifecycle> testModules = Arrays.asList(testModule);
         doReturn(testModules.spliterator()).when(modules).spliterator();
-        final LifecycleController controller = new LifecycleController(modules, logger, shutdownListener);
+        final LifecycleController controller = new LifecycleController(modules, logger, shutdownListener, applicationContextInstance);
 
         // execution
         controller.start();
@@ -94,7 +105,7 @@ public class LifecycleControllerTests {
         doCallRealMethod().when(testModule).getStopPriority();
         final List<ModuleLifecycle> testModules = Arrays.asList(testModule);
         doReturn(testModules.spliterator()).when(modules).spliterator();
-        final LifecycleController controller = spy(new LifecycleController(modules, logger, shutdownListener));
+        final LifecycleController controller = spy(new LifecycleController(modules, logger, shutdownListener, applicationContextInstance));
         doNothing().when(controller).shutdownJvm();
 
         // execution
@@ -114,7 +125,7 @@ public class LifecycleControllerTests {
         expectedException.expect(any(StartupException.class));
 
         // execution
-        new LifecycleController(modules, logger, shutdownListener);
+        new LifecycleController(modules, logger, shutdownListener, applicationContextInstance);
     }
 
     @Test
@@ -126,7 +137,7 @@ public class LifecycleControllerTests {
         expectedException.expect(any(StartupException.class));
 
         // execution
-        new LifecycleController(modules, logger, shutdownListener);
+        new LifecycleController(modules, logger, shutdownListener, applicationContextInstance);
 
     }
 

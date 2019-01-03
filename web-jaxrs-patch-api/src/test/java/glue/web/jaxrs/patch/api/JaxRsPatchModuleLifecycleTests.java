@@ -23,23 +23,21 @@ public class JaxRsPatchModuleLifecycleTests {
     @Mock
     private Logger logger;
     @Mock
-    private PatchReaderInterceptor interceptor;
-    @Mock
     private JaxRsProvider provider;
 
     private JaxRsPatchModuleLifecycle moduleLifecycle;
 
     @Before
     public void setup() {
-        this.moduleLifecycle = new JaxRsPatchModuleLifecycle(provider, interceptor, logger);
+        this.moduleLifecycle = new JaxRsPatchModuleLifecycle(provider, logger);
     }
 
     @Test
-    public void shouldRegisterResolverOnStartup() {
+    public void shouldRegisterPatchInterceptorOnStartup() {
         // execution
         moduleLifecycle.start();
 
         // validation
-        verify(provider, times(1)).registerSingleton(interceptor);
+        verify(provider, times(1)).registerClass(PatchReaderInterceptor.class);
     }
 }

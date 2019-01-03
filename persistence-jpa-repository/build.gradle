@@ -1,0 +1,5 @@
+dependencies {
+    compile project(":persistence-jpa-api")
+    compile group: 'org.apache.deltaspike.modules', name: 'deltaspike-data-module-api', version: '1.9.0'
+    compile group: 'org.apache.deltaspike.modules', name: 'deltaspike-data-module-impl', version: '1.9.0'
+}

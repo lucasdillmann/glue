@@ -53,10 +53,12 @@ public class PersistenceJpaApiModule implements ModuleLifecycle {
             entityManager = context.getFactory().createEntityManager();
             if (!entityManager.isOpen())
                 throw new IllegalStateException("Persistence provider created an invalid EntityManager");
+            entityManager.getTransaction().begin();
+            entityManager.getTransaction().rollback();
         } catch (final Exception ex) {
             throw new StartupException("Persistence API failed to start", ex);
         } finally {
-            if (entityManager != null)
+            if (entityManager != null && entityManager.isOpen())
                 entityManager.close();
         }
     }

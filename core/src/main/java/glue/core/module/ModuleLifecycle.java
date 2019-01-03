@@ -33,10 +33,11 @@ public interface ModuleLifecycle {
      * <p>This method returns the priority that should be taken into account when the application is starting up. The
      * default value is {@link Priority#REGULAR}.</p>
      *
+     * @see Priority
      * @return Module startup priority
      */
-    default Priority getStartPriority() {
-        return Priority.REGULAR;
+    default Integer getStartPriority() {
+        return Priority.REGULAR.asInteger();
     }
 
     /**
@@ -45,10 +46,11 @@ public interface ModuleLifecycle {
      * <p>This method defines the priority to take into account when the application is shutting down. The default
      * value is {@link Priority#REGULAR}.</p>
      *
+     * @see Priority
      * @return Module stop priority
      */
-    default Priority getStopPriority() {
-        return Priority.REGULAR;
+    default Integer getStopPriority() {
+        return Priority.REGULAR.asInteger();
     }
 
 }

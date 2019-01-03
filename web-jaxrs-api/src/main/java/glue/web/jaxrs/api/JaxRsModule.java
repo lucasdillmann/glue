@@ -32,8 +32,8 @@ public class JaxRsModule implements ModuleLifecycle {
     }
 
     @Override
-    public Priority getStartPriority() {
-        return Priority.LOW;
+    public Integer getStartPriority() {
+        return Priority.LOW.asInteger();
     }
 
     /**
