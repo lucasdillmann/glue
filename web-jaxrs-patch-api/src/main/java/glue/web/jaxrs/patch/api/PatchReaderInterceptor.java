@@ -3,6 +3,7 @@ package glue.web.jaxrs.patch.api;
 import org.slf4j.Logger;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ResourceContext;
@@ -43,6 +44,8 @@ public class PatchReaderInterceptor implements ReaderInterceptor {
     private ResourceInfo resourceInfo;
     @Context
     private ResourceContext resourceContext;
+    @Context
+    private HttpServletRequest servletRequest;
 
     private final PatchProcessorResolver resolver;
     private final Logger logger;
@@ -51,7 +54,7 @@ public class PatchReaderInterceptor implements ReaderInterceptor {
      * Constructor with {@link PatchProcessorResolver} and {@link Logger} initialization
      *
      * @param resolver PatchProcessor implementation resolver
-     * @param logger Logger
+     * @param logger   Logger
      */
     @Inject
     public PatchReaderInterceptor(final PatchProcessorResolver resolver, final Logger logger) {
@@ -74,9 +77,18 @@ public class PatchReaderInterceptor implements ReaderInterceptor {
      * @throws WebApplicationException thrown by the wrapped {@code MessageBodyReader.readFrom} method.
      */
     @Override
-    @PATCH
     public Object aroundReadFrom(final ReaderInterceptorContext requestContext)
             throws IOException, WebApplicationException {
+
+        final String httpMethod = Optional
+                .ofNullable(servletRequest.getMethod())
+                .map(String::toUpperCase)
+                .orElse(null);
+
+        if (!"PATCH".equals(httpMethod)) {
+            logger.debug("Received request isn't a PATCH request. Nothing will be done.");
+            return requestContext.proceed();
+        }
 
         logger.debug("PATCH request received for {} using media type {}", uriInfo.getPath(), requestContext.getMediaType());
 

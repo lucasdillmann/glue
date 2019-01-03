@@ -68,7 +68,7 @@ public class DataSourceModule implements ModuleLifecycle {
     }
 
     @Override
-    public Priority getStartPriority() {
-        return Priority.HIGH;
+    public Integer getStartPriority() {
+        return Priority.HIGH.asInteger();
     }
 }

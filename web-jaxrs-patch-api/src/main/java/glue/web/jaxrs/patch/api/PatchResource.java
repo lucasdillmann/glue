@@ -31,6 +31,6 @@ public interface PatchResource {
      * @param uriInfo URI details
      * @return Object to be used for patching
      */
-    Optional<Object> getPatchTargetObject(ResourceInfo resourceInfo, UriInfo uriInfo);
+    Optional<?> getPatchTargetObject(ResourceInfo resourceInfo, UriInfo uriInfo);
 
 }

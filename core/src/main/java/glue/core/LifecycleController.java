@@ -38,26 +38,30 @@ class LifecycleController {
     private static final String NO_MODULES_ERROR = "No Glue modules found at classpath. We can't start the application when there's nothing to start.";
 
     private final List<ModuleLifecycle> modules;
+    private final Instance<GlueApplicationContext> applicationContext;
     private final Logger logger;
     private final ShutdownListener jvmListener;
 
     /**
-     * Constructor with modules, log and JVM listener initialization
+     * Constructor with modules, log, application context and JVM listener initialization
      *
-     * @param modules     Application modules available in the classpath
-     * @param logger      Logger
-     * @param jvmListener JVM shutdown listener
+     * @param modules            Application modules available in the classpath
+     * @param logger             Logger
+     * @param applicationContext Application context
+     * @param jvmListener        JVM shutdown listener
      */
     @Inject
     LifecycleController(@Any Instance<ModuleLifecycle> modules,
                         Instance<Logger> logger,
-                        Instance<ShutdownListener> jvmListener) {
+                        Instance<ShutdownListener> jvmListener,
+                        Instance<GlueApplicationContext> applicationContext) {
         validateLogger(logger);
         validateModules(modules);
 
         this.modules = StreamSupport.stream(modules.spliterator(), false).collect(Collectors.toList());
         this.logger = logger.get();
         this.jvmListener = jvmListener.get();
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -111,11 +115,50 @@ class LifecycleController {
      */
     void stop() {
         logger.info("Glue is shutting down");
-        jvmListener.stop();
-        getSortedModules(ModuleLifecycle::getStopPriority).forEach(ModuleLifecycle::stop);
+        shutdownJvmListener();
+        shutdownModules();
+        shutdownIocProvider();
 
         logger.info("Good bye");
         shutdownJvm();
+    }
+
+    /**
+     * Shutdown the JVM listener for SIGTERM events
+     */
+    private void shutdownJvmListener() {
+        logger.debug("Stopping JVM shutdown listener");
+        jvmListener.stop();
+    }
+
+    /**
+     * Shutdown all Glue modules detected at startup
+     */
+    private void shutdownModules() {
+        logger.debug("Stopping Glue modules");
+        getSortedModules(ModuleLifecycle::getStopPriority).forEach(this::stopSilently);
+    }
+
+    /**
+     * Shutdown the IoC provider used in application startup
+     */
+    private void shutdownIocProvider() {
+        logger.info("Stopping IoC provider");
+        applicationContext.get().getIocProvider().shutdown();
+    }
+
+    /**
+     * Tries to stop the module. If it fails, logs the exception and don't propagate exception.
+     *
+     * @param module Module to be stopped
+     */
+    private void stopSilently(final ModuleLifecycle module) {
+        logger.info("Stopping module from {}", module.getClass().getSimpleName());
+        try {
+            module.stop();
+        } catch (final Exception ex) {
+            logger.error("Error stopping module", ex);
+        }
     }
 
     /**
@@ -132,13 +175,13 @@ class LifecycleController {
      * @param priorityProvider Lambda function for priority method
      * @return Sorted stream from the detected modules
      */
-    private Stream<ModuleLifecycle> getSortedModules(final Function<ModuleLifecycle, Priority> priorityProvider) {
+    private Stream<ModuleLifecycle> getSortedModules(final Function<ModuleLifecycle, Integer> priorityProvider) {
         return modules
                 .stream()
                 .sorted(Comparator.comparing(
                         module -> Optional
                                 .ofNullable(priorityProvider.apply(module))
-                                .orElse(Priority.REGULAR).asInteger()
+                                .orElse(Priority.REGULAR.asInteger())
                 ));
     }
 }

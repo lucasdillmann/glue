@@ -2,7 +2,7 @@ package glue.persistence.jpa.api;
 
 import org.slf4j.Logger;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -28,7 +28,7 @@ public class EntityManagerProvider {
      * Constructor with {@link PersistenceContext} and {@link Logger} initialization
      *
      * @param context Persistence context
-     * @param logger Logger instance
+     * @param logger  Logger instance
      */
     @Inject
     public EntityManagerProvider(final PersistenceContext context, final Logger logger) {
@@ -44,9 +44,19 @@ public class EntityManagerProvider {
      * @return EntityManager instance
      */
     @Produces
-    @RequestScoped
     public EntityManager entityManager() {
         logger.debug("Producing an EntityManager using default persistence context on thread {}", Thread.currentThread().getName());
+
         return context.getFactory().createEntityManager();
+    }
+
+    /**
+     * Disposes a {@link EntityManager} by closing it if open
+     *
+     * @param entityManager Entity manager to be disposed
+     */
+    public void dispose(final @Disposes EntityManager entityManager) {
+        if (entityManager.isOpen())
+            entityManager.close();
     }
 }

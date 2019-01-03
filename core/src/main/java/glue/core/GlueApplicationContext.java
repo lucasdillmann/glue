@@ -1,5 +1,6 @@
 package glue.core;
 
+import org.jboss.weld.environment.se.WeldContainer;
 import org.slf4j.Logger;
 
 import javax.annotation.PostConstruct;
@@ -23,6 +24,7 @@ public final class GlueApplicationContext {
     private final Logger logger;
     private final Instance<LifecycleController> lifecycleController;
     private Class<?> startupClass;
+    private WeldContainer iocProvider;
 
     /**
      * Constructor with {@link Logger} and {@link LifecycleController} initialization
@@ -52,6 +54,14 @@ public final class GlueApplicationContext {
         Objects.requireNonNull(startupClass);
         logger.debug("Application startup class set to {}", startupClass.getName());
         this.startupClass = startupClass;
+    }
+
+    void setIocProvider(final WeldContainer iocProvider) {
+        this.iocProvider = iocProvider;
+    }
+
+    public WeldContainer getIocProvider() {
+        return iocProvider;
     }
 
     /**

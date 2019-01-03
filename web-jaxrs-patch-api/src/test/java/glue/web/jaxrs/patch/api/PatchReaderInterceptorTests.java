@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.MediaType;
@@ -59,6 +60,8 @@ public class PatchReaderInterceptorTests {
     private InputStream patchedStream;
     @Mock
     private Object patchEntity;
+    @Mock
+    private HttpServletRequest servletRequest;
 
     private Class<?> resourceClass;
     private Method resourceMethod;
@@ -75,7 +78,9 @@ public class PatchReaderInterceptorTests {
         injectAttribute(UriInfo.class, uriInfo);
         injectAttribute(ResourceInfo.class, resourceInfo);
         injectAttribute(ResourceContext.class, resourceContext);
+        injectAttribute(HttpServletRequest.class, servletRequest);
 
+        doReturn("PATCH").when(servletRequest).getMethod();
         doReturn(resourceClass).when(resourceInfo).getResourceClass();
         doReturn(patchResource).when(resourceContext).getResource(any(Class.class));
         doReturn(mediaType).when(requestContext).getMediaType();
@@ -97,6 +102,22 @@ public class PatchReaderInterceptorTests {
                         throw new RuntimeException(ex);
                     }
                 });
+    }
+
+    @Test
+    public void shouldDoNothingWhenRequestIsntPatchRequest() throws Exception {
+        // scenario
+        doReturn("GET").when(servletRequest).getMethod();
+
+        // execution
+        interceptor.aroundReadFrom(requestContext);
+
+        // validation
+        verify(requestContext, times(0)).getMediaType();
+        verify(requestContext, times(0)).getInputStream();
+        verify(requestContext, times(0)).setInputStream(any(InputStream.class));
+        verify(resolver, times(0)).getProcessor(any(MediaType.class));
+        verify(resourceContext, times(0)).getResource(any());
     }
 
     @Test

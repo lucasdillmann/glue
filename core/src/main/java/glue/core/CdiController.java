@@ -36,8 +36,9 @@ class CdiController {
         this.injector = new Weld()
                 .enableDiscovery()
                 .scanClasspathEntries()
-                .containerId("glue")
+                .containerId("Glue")
                 .addPackages(true, applicationMainClass.getPackage())
+                .skipShutdownHook()
                 .initialize();
     }
 
@@ -50,6 +51,7 @@ class CdiController {
     void start() {
         final GlueApplicationContext context = injector.select(GlueApplicationContext.class).get();
         context.setStartupClass(applicationMainClass);
+        context.setIocProvider(injector);
         context.start();
     }
 }
